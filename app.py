@@ -121,8 +121,10 @@ def upload_file():
     file.save(original_path)
     
     # 处理文件
-    processed_filename = f"processed_{unique_id}_{filename}"
-    processed_path = os.path.join(PROCESSED_FOLDER, processed_filename)
+    base_name = os.path.splitext(filename)[0]
+    processed_filename = f"{base_name}排布结果.csv"
+    full_processed_filename = f"processed_{unique_id}_{processed_filename}"
+    processed_path = os.path.join(PROCESSED_FOLDER, full_processed_filename)
     
     success, message = process_csv(original_path, processed_path)
     
@@ -135,14 +137,14 @@ def upload_file():
     
     # 设置文件过期时间（30分钟后）
     expiry_time = datetime.now() + timedelta(minutes=30)
-    file_expiry[processed_filename] = expiry_time
+    file_expiry[full_processed_filename] = expiry_time
     
     # 返回成功响应
     return jsonify({
         'success': True, 
         'message': '文件处理成功', 
         'filename': processed_filename,
-        'download_url': url_for('download_file', filename=processed_filename)
+        'download_url': url_for('download_file', filename=full_processed_filename)
     })
 
 # 路由：下载文件
